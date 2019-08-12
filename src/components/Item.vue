@@ -1,23 +1,43 @@
 <template>
-    <v-layout 
-    @mousedown="beginDrag(item)" 
-    align-center 
-    justify-start 
-    style="background: #FBFBFB;max-width:1090px;" 
-    :style="this.item == selected ? drag_class : ''">
+    <v-layout  
+      align-center 
+      justify-start 
+      style="padding:0 36px 0 36px;margin-left:-36px;margin-right:-36px;cursor:pointer;background: #FBFBFB;max-width:1126px;z-index:1" 
+      :style="this.item == selectedd ? drag_class : '' "
+      @click="beginDrag(item)"
+    >
 
       <v-img style="margin:20px 16px 20px 0" max-height="32" max-width="32" src="../assets/img/operation-+.svg"></v-img>
 
       <v-layout column style="width:260px;margin:17px 0;max-width:260px">
-        <v-layout >
+        <v-layout align-center >
           <span class="text--name">
             {{item.contractor}}
+          </span>
+
+          <span v-if="this.item == selected" style="cursor:pointer;height:15px;width:15px;">
+            <v-img 
+              style="margin:6px auto;transform: rotate(270deg)" 
+              height="6"
+              max-width="3" 
+              src="../assets/img/arrow-down.svg"
+            ></v-img>
           </span>
         </v-layout>
 
         <v-layout style="margin-top:2px;">
           <span class="text--from_account">
             <span class="opacity-4">Со счета:</span>  {{item.from_account}}
+          </span>
+
+          <span  v-if="this.item == selected" style="cursor:pointer;height:15px;width:15px;">
+            <v-img 
+              
+              style="margin:6px auto;transform: rotate(270deg)" 
+              height="6"
+              max-width="3" 
+              src="../assets/img/arrow-down.svg"
+            ></v-img>
           </span>
         </v-layout>
       </v-layout>
@@ -26,6 +46,15 @@
         <v-layout>
           <span class="text--name">
             {{item.task_name}}
+          </span>
+
+          <span v-if="this.item == selected" style="cursor:pointer;height:15px;width:15px;">
+            <v-img 
+              style="margin:6px auto;transform: rotate(270deg)" 
+              height="6"
+              max-width="3" 
+              src="../assets/img/arrow-down.svg"
+            ></v-img>
           </span>
         </v-layout>
 
@@ -36,11 +65,12 @@
         </v-layout>        
       </v-layout>
 
-      <v-layout 
+      <v-layout
         style="width:300px;max-width:300px"
         class="text--name"
       >
-        {{item.description}}
+        <span v-if="this.item !== selected">{{item.description}}</span>
+        <input style="border-bottom:1px solid #2E2E2E10;width:260px;outline:0;" @click.stop="1" v-else v-model="item.description" type="text">
       </v-layout>
       
 
@@ -69,10 +99,11 @@
 
 <script>
 export default {
-  props:["item"],
+
+  props:["item","selected"],
   data: () => ({
     drag_class:'',
-    selected:null,
+    // selected:null,
     cursor:require('../assets/img/Group.svg'),
   }),
   computed:{
@@ -83,22 +114,42 @@ export default {
     pay_residual () {
       let num = Math.abs((this.item.pay%1).toFixed(2)/.01)
       return num == 0 ? "00" : num
+    },
+    selectedd () {
+      return this.selected
     }
   },
   methods:{
     beginDrag(item){
-      this.selected = item;
-      this.drag_class = `z-index:555;cursor:url('${this.cursor}'),auto;background-color:#F7F7F7;box-shadow: 0px 15px 59px -19px rgba(0,0,0,0.44);
--webkit-box-shadow: 0px 15px 59px -19px rgba(0,0,0,0.44);
--moz-box-shadow: 0px 15px 59px -19px rgba(0,0,0,0.44);`;
-    },
-    stopDrag () {
-      this.drag_class = '';
+
+      if(this.selected == item){
+        this.drag_class = '';
+        this.selected = null;
+        return
+      }
       this.selected = null;
+      this.drag_class = '';
+      this.selected = item;
+      this.drag_class = `
+      cursor:url('${this.cursor}'),auto;
+      position:relative;
+      z-index:2;
+      background-color:#F7F7F7;
+      box-shadow: 0px 15px 30px -19px rgba(0,0,0,0.44);
+      -webkit-box-shadow: 0px 15px 30px -19px rgba(0,0,0,0.44);
+      -moz-box-shadow: 0px 15px 30px -19px rgba(0,0,0,0.44);`;
+    },
+    stopDrag (e) {
+      if(!e.target.closest('.dropitem')){
+        this.drag_class = '';
+        this.selected = null;
+        return;
+      }
+ 
     }
   },
   mounted() {
-    window.addEventListener('mouseup', this.stopDrag);
+    document.addEventListener('mouseup', this.stopDrag);
   }
 }
 </script>

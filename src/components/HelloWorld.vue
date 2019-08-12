@@ -1,11 +1,12 @@
 <template>
   <v-container 
-  justify-space-between 
-  fluid 
-  row 
-  style="padding:26px 36px;min-width:1440px;max-width:1440px;" >
+    justify-space-between 
+    fluid 
+    row 
+    style="margin:0 auto;padding:26px 36px;min-width:1440px;max-width:1440px;" 
+  >
 
-    <v-layout  column style="max-width:1047px;">
+    <v-layout column style="max-width:1047px;">
 
       <v-flex row style="margin:0;max-height:44px;">
 
@@ -250,8 +251,20 @@
               bottom: 36px;
               z-index: 99999;"
       >
-        <v-img  height="16" max-width="16" src="../assets/img/icons/plus-icon.svg"></v-img>
+        <v-icon>mdi-plus</v-icon>
+        <!-- <span :style="'height:60px;left:0;background-image:url(' + require('../assets/img/icons/plus-icon.svg') + ')'"></span> -->
+        <!-- <v-img style="fill:white" height="16" max-width="16" src="../assets/img/icons/plus-icon.svg"></v-img> -->
       </v-btn>
+
+    <draggable 
+      v-model="trashZone" 
+      class="dropzone dropzone-1 trashzone" 
+      :options="trashOptions"
+      
+    >
+      <!-- <div slot="footer" class="footer">Trash</div> -->
+      <v-img height="72" max-width="72" src="../assets/img/icons/delete.svg"></v-img>
+    </draggable>
 
   </v-container>
   
@@ -261,13 +274,26 @@
 import Menu from './Menu'
 import OperationsStack from './OperationsStack'
 import Item from './Item'
+import DragAndDrop from './DragAndDrop'
+import draggable from 'vuedraggable'
 export default {
   components:{
     Menu,
     Item,
-    OperationsStack
+    OperationsStack,
+    draggable
   },
   data: () => ({
+    currentGroup: null,
+      trashZone: [],
+      trashOptions: {
+        group: {
+          name: 'trash',
+          draggable: '.dropitem',
+          put: () => true,
+          pull: false
+        }
+      },
     profiles:[
       {name:'Дмитрий Карпов',img:''},
       {img:require('../assets/img/photos/photo_1.png')},
@@ -354,7 +380,13 @@ export default {
 </script>
 
 <style>
-
+  HTML {
+    background-repeat: no-repeat;
+    background-position:  50% 0;
+    /* Mobile layout by default */
+    background-size: 1440px;
+    background-image: url( '../assets/img/liana-index-page-operation-menu-1440.png' );
+  }
  #app{
    background-color: #FBFBFB;
    font-weight: 500;
